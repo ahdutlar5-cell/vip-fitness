@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIP Fitness — မင်းရဲ့ ကိုယ်ပိုင် လေ့ကျင့်ခန်း ဆရာ</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pyidaungsu', 'Myanmar Text', system-ui, sans-serif; }
+:root {
+  --bg: #0a0e1a;
+  --bg2: #131826;
+  --bg3: #1c2333;
+  --accent: #ff6b35;
+  --accent2: #f7c59f;
+  --text: #e8ecf5;
+  --text2: #8b95a8;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warn: #f59e0b;
+  --border: #2a3347;
+}
+body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+.container { max-width: 720px; margin: auto; padding: 16px; }
+h1 { font-size: 1.6rem; margin: 16px 0; color: var(--accent); letter-spacing: -0.5px; }
+h2 { color: var(--accent); margin: 20px 0 12px; font-size: 1.2rem; }
+h3 { color: var(--accent2); margin: 8px 0; font-size: 1rem; }
+p { line-height: 1.6; margin: 6px 0; }
+.sub { color: var(--text2); margin-bottom: 20px; font-size: .9rem; }
+label { display: block; margin: 14px 0; font-size: .9rem; color: var(--text2); }
+input, select, textarea {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--text); margin-top: 6px; font-size: 1rem;
+  transition: all 0.2s;
+}
+input:focus, select:focus { outline: none; border-color: var(--accent); background: var(--bg3); }
+button, .btn {
+  display: inline-block; width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--accent), #ff8c5a);
+  border: none; border-radius: 10px; color: #000;
+  font-weight: bold; font-size: 1rem; margin-top: 12px;
+  cursor: pointer; text-align: center; text-decoration: none;
+  transition: all 0.2s; letter-spacing: 0.3px;
+}
+button:hover, .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+button:active { transform: translateY(0); }
+.btn-outline { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.card {
+  background: var(--bg2); padding: 18px; border-radius: 14px;
+  margin: 12px 0; border: 1px solid var(--border);
+}
+.card-accent { border-left: 4px solid var(--accent); }
+.card-warn { border-left: 4px solid var(--warn); background: #2a1e0a; }
+.card-success { border-left: 4px solid var(--success); background: #0a2a15; }
+.card-danger { border-left: 4px solid var(--danger); background: #2a0f0f; }
+.exercise {
+  background: var(--bg3); padding: 12px 14px; border-radius: 10px;
+  margin: 8px 0; font-size: .9rem; line-height: 1.6;
+  border-left: 3px solid var(--accent);
+}
+.exercise b { color: var(--accent2); }
+.exercise a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.exercise a:hover { text-decoration: underline; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: .72rem; font-weight: bold; margin-left: 6px;
+  letter-spacing: 0.5px;
+}
+.badge-trial { background: var(--warn); color: #000; }
+.badge-premium { background: var(--accent); color: #000; }
+.badge-expired { background: var(--danger); color: #fff; }
+.plan-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 16px 0; }
+@media (min-width: 600px) { .plan-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.plan-card {
+  background: var(--bg2); border: 2px solid var(--border);
+  border-radius: 14px; padding: 18px; text-align: center;
+  position: relative; transition: all 0.2s;
+}
+.plan-card.featured { border-color: var(--accent); background: var(--bg3); }
+.plan-card .price { font-size: 1.6rem; font-weight: bold; color: var(--accent); margin: 8px 0; }
+.plan-card .price small { font-size: .85rem; color: var(--text2); font-weight: normal; }
+.plan-card ul { list-style: none; margin: 12px 0; text-align: left; font-size: .85rem; }
+.plan-card ul li { padding: 4px 0; color: var(--text2); }
+.plan-card ul li::before { content: "✓ "; color: var(--success); font-weight: bold; }
+.best-value {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #000; padding: 3px 14px;
+  border-radius: 12px; font-size: .7rem; font-weight: bold;
+}
+.hidden { display: none !important; }
+.center { text-align: center; }
+.stat-box {
+  background: var(--bg3); border-radius: 10px; padding: 12px;
+  text-align: center; margin: 6px 0;
+}
+.stat-box .num { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+.stat-box .lbl { font-size: .75rem; color: var(--text2); }
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--success); color: #fff; padding: 12px 24px;
+  border-radius: 10px; font-weight: bold; z-index: 9999;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { opacity:0; transform: translate(-50%, 20px); } to { opacity:1; transform: translate(-50%, 0); } }
+.loader { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--text2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.copy-box { background: var(--bg3); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin: 6px 0; font-family: monospace; font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<div id="loadingPage" class="container center" style="padding-top: 40vh;">
+  <div class="loader" style="width: 40px; height: 40px; border-width: 4px;"></div>
+  <p style="margin-top: 20px; color: var(--text2);">ခဏစောင့်ပါ...</p>
+</div>
+
+<div id="loginPage" class="container hidden">
+  <h1>🔐 VIP Fitness ဝင်ရောက်ခြင်း</h1>
+  <p class="sub">မင်းရဲ့ ကိုယ်ပိုင် လေ့ကျင့်ခန်း ဆရာထံ ဝင်ပါ</p>
+  <div class="card">
+    <label>Email
+      <input type="email" id="loginEmail" placeholder="your@email.com">
+    </label>
+    <label>Password (၆ လုံးအနည်းဆုံး)
+      <input type="password" id="loginPassword" placeholder="••••••••">
+    </label>
+    <button onclick="doLogin()">ဝင်မယ်</button>
+    <button onclick="doSignup()" class="btn-outline">အကောင့် အသစ် ဖန်တီးမယ်</button>
+  </div>
+</div>
+
+<div id="formPage" class="container hidden">
+  <h1>🏋️ VIP Fitness Planner <span id="formBadge"></span></h1>
+  <p class="sub">မေးခွန်းလေးတွေ ဖြေပေးပါ — မင်းအတွက် အစီအစဉ် ဖန်တီးပေးမယ်</p>
+  <form id="onboardForm">
+    <label>နာမည်
+      <input type="text" id="name" placeholder="ဥပမာ - မောင်မောင်" required>
+    </label>
+    <label>အသက်
+      <input type="number" id="age" placeholder="ဥပမာ - 18" required>
+    </label>
+    <label>ယောက်ျား / မိန်းမ
+      <select id="gender">
+        <option value="male">ယောက်ျား</option>
+        <option value="female">မိန်းမ</option>
+      </select>
+    </label>
+    <label>အမြင့် (စင်တီမီတာ)
+      <input type="number" id="height" placeholder="ဥပမာ - 170" required>
+    </label>
+    <label>အလေးချိန် (ကီလိုဂရမ်)
+      <input type="number" id="weight" placeholder="ဥပမာ - 60" step="0.1" required>
+    </label>
+    <label>မင်းရဲ့ ပန်းတိုင်
+      <select id="goal">
+        <option value="lose">အဆီ လျှော့ချင်တယ် (အဝိတ် ကျချင်တယ်)</option>
+        <option value="sixpack">Six Pack ဗိုက်ပြားချင်တယ်</option>
+        <option value="gain">ကြွက်သား တည်ဆောက်ချင်တယ်</option>
+        <option value="maintain">အလေးချိန် ထိန်းချင်တယ်</option>
+      </select>
+    </label>
+    <label>တစ်နေ့ အိပ်ချိန် (နာရီ)
+      <input type="number" id="sleep" value="7" step="0.5">
+    </label>
+    <label>လေ့ကျင့်ခန်း အတွေ့အကြုံ
+      <select id="experience">
+        <option value="beginner">အသစ်စက်စက် (မလုပ်ဖူးဘူး)</option>
+        <option value="intermediate">နည်းနည်း လုပ်ဖူးတယ်</option>
+        <option value="advanced">ကျွမ်းကျင်တယ်</option>
+      </select>
+    </label>
+    <label>ဘယ်မှာ လေ့ကျင့်မလဲ
+      <select id="location">
+        <option value="home">အိမ်မှာပဲ</option>
+        <option value="gym">ဂျင်မှာပဲ</option>
+        <option value="both">နှစ်မျိုးလုံး</option>
+      </select>
+    </label>
+    <label>တစ်ပတ် ဘယ်နှစ်ရက် လုပ်နိုင်လဲ
+      <select id="days">
+        <option value="2">၂ ရက်</option>
+        <option value="3">၃ ရက်</option>
+        <option value="4">၄ ရက်</option>
+        <option value="5" selected>၅ ရက်</option>
+        <option value="6">၆ ရက်</option>
+      </select>
+    </label>
+    <label>တစ်ခါ ဘယ်နှစ်မိနစ် လုပ်နိုင်လဲ
+      <select id="duration">
+        <option value="30">၃၀ မိနစ်</option>
+        <option value="45" selected>၄၅ မိနစ်</option>
+        <option value="60">၆၀ မိနစ်</option>
+        <option value="90">၉၀ မိနစ်</option>
+      </select>
+    </label>
+    <button type="submit">ငါ့အတွက် အစီအစဉ် ဖန်တီးပါ →</button>
+  </form>
+</div>
+
+<div id="dashboardPage" class="container hidden">
+  <h1 id="greeting"></h1>
+  <div id="statusBox"></div>
+  <div class="card">
+    <h2>🍗 တစ်နေ့တာ အာဟာရ</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="stat-box"><div class="num" id="calTarget">-</div><div class="lbl">ကယ်လိုရီ</div></div>
+      <div class="stat-box"><div class="num" id="proteinTarget">-</div><div class="lbl">ပရိုတိန်း (ဂ)</div></div>
+      <div class="stat-box"><div class="num" id="carbsTarget">-</div><div class="lbl">ကာဗို (ဂ)</div></div>
+      <div class="stat-box"><div class="num" id="fatTarget">-</div><div class="lbl">အဆီ (ဂ)</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>😴 အိပ်ချိန်</h2>
+    <p>တစ်နေ့ <b id="sleepTarget" style="color:var(--accent);font-size:1.2rem;">-</b> နာရီ အိပ်ပါ</p>
+  </div>
+  <h2>📅 မင်းရဲ့ တစ်ပတ်တာ အစီအစဉ်</h2>
+  <div id="plan"></div>
+  <button onclick="showProgress()" class="btn-outline">📈 တိုးတက်မှု မှတ်တမ်း</button>
+  <button onclick="logout()" class="btn-danger" style="margin-top:8px;">ထွက်မယ်</button>
+</div>
+
+<div id="progressPage" class="container hidden">
+  <h1>📈 တိုးတက်မှု မှတ်တမ်း</h1>
+  <div class="card">
+    <label>ယနေ့ အလေးချိန် (ကီလိုဂရမ်)
+      <input type="number" id="logWeight" step="0.1" placeholder="ဥပမာ - 60.5">
+    </label>
+    <button onclick="saveWeight()">အလေးချိန် မှတ်မယ် ✅</button>
+  </div>
+  <div id="history"></div>
+  <button onclick="showDashboard()" class="btn-outline" style="margin-top:12px;">← အစီအစဉ် ပြန်ကြည့်</button>
+</div>
+
+<div id="paymentPage" class="container hidden">
+  <h1>💎 Premium ဖြစ်အောင် ဝယ်ပါ</h1>
+  <div id="paymentStatus" class="card card-warn">
+    <h3>⏰ Free Trial ကုန်ပါပြီ</h3>
+    <p>ဆက်သုံးချင်ရင် Premium ဝယ်ပါ။</p>
+  </div>
+  <div class="plan-grid">
+    <div class="plan-card">
+      <div style="font-size:1.5rem;">📅</div>
+      <div style="font-weight:bold;margin:6px 0;">တစ်လ</div>
+      <div class="price">၅,၀၀၀<small> ကျပ်</small></div>
+      <ul>
+        <li>အစီအစဉ် အပြည့်အစုံ</li>
+        <li>Six Pack exercises</li>
+        <li>ဗီဒီယို လမ်းညွှန်</li>
+        <li>Progress tracker</li>
+      </ul>
+    </div>
+    <div class="plan-card featured">
+      <div class="best-value">BEST VALUE</div>
+      <div style="font-size:1.5rem;">⭐</div>
+      <div style="font-weight:bold;margin:6px 0;">တစ်နှစ်</div>
+      <div class="price">၄၅,၀၀၀<small> ကျပ်</small></div>
+      <ul>
+        <li>အပေါ်အားလုံး</li>
+        <li>၂၅% သက်သာ</li>
+        <li>ဦးစားပေး support</li>
+        <li>အသစ်တွေ အရင် ရ</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h2>📱 ငွေလွှဲရန်</h2>
+    <p style="font-size:.9rem;color:var(--text2);">အောက်ပါ နံပါတ်များထဲက တစ်ခုသို့ ငွေလွှဲပါ:</p>
+    <div class="copy-box">
+      <span><b>KBZPay:</b> 09123456789</span>
+      <button onclick="copyText('09123456789')" style="width:auto;padding:6px 12px;margin:0;font-size:.8rem;">Copy</button>
+    </div>
+    <div class="copy-box">
+      <span><b>WavePay:</b> 09123456789</span>
+      <button onclick="copyText('09123456789')" style="width:auto;padding:6px 12px;margin:0;font-size:.8rem;">Copy</button>
+    </div>
+    <div class="copy-box">
+      <span><b>AYA Pay:</b> 09123456789</span>
+      <button onclick="copyText('09123456789')" style="width:auto;padding:6px 12px;margin:0;font-size:.8rem;">Copy</button>
+    </div>
+    <p style="color:var(--warn);font-size:.85rem;margin-top:12px;">
+      ⚠️ ငွေလွှဲပြီးရင် Screenshot ကို <b>Telegram @YourUsername</b> သို့ ပို့ပါ။<br>
+      Admin က ၂၄ နာရီအတွင်း စစ်ပြီး အတည်ပြုပေးမယ်။
+    </p>
+  </div>
+  <button onclick="logout()" class="btn-danger">ထွက်မယ်</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc }
+  from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+// ✅ မင်း ရဲ့ တကယ့် Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyC5FEpVJlyfTK_ul7ZxkILDVk0eMN7E9Bk",
+  authDomain: "vip-fitness-cb214.firebaseapp.com",
+  projectId: "vip-fitness-cb214",
+  storageBucket: "vip-fitness-cb214.firebasestorage.app",
+  messagingSenderId: "105668031524",
+  appId: "1:105668031524:web:249491119d387afed654b1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.auth = auth;
+window.db = db;
+window.dbHelpers = { doc, setDoc, getDoc, updateDoc };
+
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { toast("Email နဲ့ Password ထည့်ပါ", 'danger'); return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    toast("မှားနေတယ်: " + err.message, 'danger');
+  }
+};
+
+window.doSignup = async function() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  if (!email || password.length < 6) {
+    toast("Email နဲ့ ၆ လုံးအနည်းဆုံး Password ထည့်ပါ", 'danger');
+    return;
+  }
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    toast("အကောင့် ဖန်တီးပြီးပါပြီ! Free trial ၇ ရက် ရပါပြီ ✅");
+  } catch (err) {
+    toast("မှားနေတယ်: " + err.message, 'danger');
+  }
+};
+
+window.logout = async function() {
+  await signOut(auth);
+};
+
+onAuthStateChanged(auth, async function(user) {
+  document.getElementById('loadingPage').classList.add('hidden');
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('formPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.add('hidden');
+  document.getElementById('progressPage').classList.add('hidden');
+  document.getElementById('paymentPage').classList.add('hidden');
+
+  if (!user) {
+    document.getElementById('loginPage').classList.remove('hidden');
+    return;
+  }
+
+  const { doc, getDoc, setDoc } = window.dbHelpers;
+  const userRef = doc(window.db, 'users', user.uid);
+  let userSnap = await getDoc(userRef);
+  let userData;
+
+  if (!userSnap.exists()) {
+    const now = Date.now();
+    userData = {
+      email: user.email,
+      createdAt: now,
+      trialEndsAt: now + 7 * 24 * 60 * 60 * 1000,
+      isPremium: false,
+      premiumUntil: 0,
+      plan: null
+    };
+    await setDoc(userRef, userData);
+  } else {
+    userData = userSnap.data();
+  }
+
+  const now = Date.now();
+  let status = 'expired';
+  if (userData.isPremium && userData.premiumUntil > now) status = 'premium';
+  else if (userData.trialEndsAt > now) status = 'trial';
+
+  window.currentUserData = userData;
+  window.currentUserUID = user.uid;
+  window.currentStatus = status;
+
+  if (status === 'expired') {
+    document.getElementById('paymentPage').classList.remove('hidden');
+    return;
+  }
+
+  let badgeHTML = '';
+  if (status === 'premium') {
+    const d = Math.ceil((userData.premiumUntil - now) / 86400000);
+    badgeHTML = '<span class="badge badge-premium">PREMIUM · ရက် ' + d + ' ကျန်</span>';
+  } else {
+    const d = Math.ceil((userData.trialEndsAt - now) / 86400000);
+    badgeHTML = '<span class="badge badge-trial">TRIAL · ရက် ' + d + ' ကျန်</span>';
+  }
+
+  const savedPlan = localStorage.getItem('fitaiPlan_' + user.uid);
+  if (savedPlan) {
+    document.getElementById('dashboardPage').classList.remove('hidden');
+    showDashboardBadge(badgeHTML);
+    buildPlan(JSON.parse(savedPlan));
+  } else {
+    document.getElementById('formPage').classList.remove('hidden');
+    document.getElementById('formBadge').innerHTML = badgeHTML;
+  }
+});
+
+function showDashboardBadge(html) {
+  const el = document.getElementById('greeting');
+  if (el) el.innerHTML = el.innerHTML + ' ' + html;
+}
+</script>
+
+<script>
+var EXERCISES = {
+  chest: {
+    gym: [
+      { name: "ဘားဘဲလ် ရင်ဘတ် တွန်းခြင်း", sets: 4, reps: "8-10", rest: 90, video: "https://www.youtube.com/embed/rT7DgCr-3pg" },
+      { name: "ဒမ်ဘဲလ် ရင်ဘတ် တွန်းခြင်း", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/8iPEnn-ltC8" },
+      { name: "ကြိုးဖြင့် ရင်ဘတ် ဆွဲခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/Iwe6AmxVf7o" }
+    ],
+    home: [
+      { name: "တွန်းထိုးခြင်း (Push-Up)", sets: 4, reps: "10-20", rest: 60, video: "https://www.youtube.com/embed/IODxDxX7oi4" },
+      { name: "ခုံပေါ် တွန်းထိုးခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/cfTlHVBnR1g" },
+      { name: "စိန်ပုံစံ တွန်းထိုးခြင်း", sets: 3, reps: "8-12", rest: 60, video: "https://www.youtube.com/embed/J0DnG1_S92I" }
+    ]
+  },
+  back: {
+    gym: [
+      { name: "ဘားဘဲလ် ကွေးခြင်း (Deadlift)", sets: 4, reps: "6-8", rest: 120, video: "https://www.youtube.com/embed/op9kVnSso6Q" },
+      { name: "လက်ဆွဲဆွဲခြင်း (Pull-Up)", sets: 3, reps: "6-10", rest: 90, video: "https://www.youtube.com/embed/eGo4IYlbE5g" },
+      { name: "ကြိုးဆွဲခြင်း (Lat Pulldown)", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/CAwf7n6Luuc" }
+    ],
+    home: [
+      { name: "စားပွဲအောက် ဆွဲခြင်း (Inverted Row)", sets: 3, reps: "8-12", rest: 90, video: "https://www.youtube.com/embed/dvkIaarnf0g" },
+      { name: "ဗိုက်မှောက် မော့ခြင်း (Superman)", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/z6PJMT2y8GQ" },
+      { name: "တံတားပြုလုပ်ခြင်း (Bridge)", sets: 3, reps: "15-20", rest: 60, video: "https://www.youtube.com/embed/wPM8icPu6H8" }
+    ]
+  },
+  legs: {
+    gym: [
+      { name: "ဘားဘဲလ် ထိုင်ထ (Squat)", sets: 4, reps: "8-10", rest: 120, video: "https://www.youtube.com/embed/ultWZbUMPL8" },
+      { name: "လက်ကျပ် ခြေလှမ်း (Lunge)", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/QOVaHwm-Q6U" },
+      { name: "စက်ဖြင့် ခြေထောက် တွန်းခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/IZxyjW7MPJQ" }
+    ],
+    home: [
+      { name: "ထိုင်ထ (Squat)", sets: 4, reps: "15-20", rest: 60, video: "https://www.youtube.com/embed/aclHkVaku9U" },
+      { name: "ခြေလှမ်း (Lunge)", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/QOVaHwm-Q6U" },
+      { name: "ခြေဖျား မြှောက်ခြင်း", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/n5Sx6bS4J6E" }
+    ]
+  },
+  shoulders: {
+    gym: [
+      { name: "ဘားဘဲလ် ပခုံး တွန်းခြင်း", sets: 4, reps: "8-10", rest: 90, video: "https://www.youtube.com/embed/2yjwXTZQDDI" },
+      { name: "ဒမ်ဘဲလ် ဘေးတိုက် မြှောက်ခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/3VcKaXpzqRo" },
+      { name: "ကြိုးဖြင့် မျက်နှာ ဆွဲခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/rep-qVOkqgk" }
+    ],
+    home: [
+      { name: "ပခုံးတွန်းခြင်း (Pike Push-Up)", sets: 3, reps: "8-12", rest: 60, video: "https://www.youtube.com/embed/sposDXWEB0A" },
+      { name: "ရေဘူးဖြင့် ဘေးတိုက် မြှောက်ခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/3VcKaXpzqRo" },
+      { name: "လက်မောင်း ဝါး (Arm Circles)", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/140RTNMciH8" }
+    ]
+  },
+  arms: {
+    gym: [
+      { name: "ဘားဘဲလ် လက်မောင်း ကွေးခြင်း", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/kwG2ipFRgfo" },
+      { name: "ဒမ်ဘဲလ် လက်မောင်း တွန်းခြင်း", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/2-L8h2Z4Q_o" },
+      { name: "ကြိုးဖြင့် လက်မောင်း ကွေးခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/1o5b4zS0x0Y" }
+    ],
+    home: [
+      { name: "ရေဘူးဖြင့် လက်မောင်း ကွေးခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/kwG2ipFRgfo" },
+      { name: "ခုံပေါ် လက်မောင်း တွန်းခြင်း", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/x6M8lQ0f0sA" },
+      { name: "နံရပ်ပေါ် လက်မောင်း တွန်းခြင်း", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/6kALZikXxLc" }
+    ]
+  },
+  core: {
+    gym: [
+      { name: "ကြိုးဆွဲ ဗိုက်ကွေးခြင်း", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/Xyd_fa5zoEU" },
+      { name: "ခြေထောက် မြှောက်ခြင်း", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/JB2oyawG9KI" },
+      { name: "ဘော်လုံး ဗိုက်ကွေးခြင်း", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/6g4lIh5Q2-c" }
+    ],
+    home: [
+      { name: "ဗိုက်ကွေးခြင်း (Crunch)", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/Xyd_fa5zoEU" },
+      { name: "ပလန့် (Plank)", sets: 3, reps: "30-60 စက္ကန့်", rest: 60, video: "https://www.youtube.com/embed/ASdvN_XEl_c" },
+      { name: "ခြေထောက် မြှောက်ခြင်း (Leg Raise)", sets: 3, reps: "12-15", rest: 60, video: "https://www.youtube.com/embed/JB2oyawG9KI" }
+    ]
+  },
+  sixpack: {
+    gym: [
+      { name: "ကြိုးဆွဲ ဗိုက်ကွေးခြင်း (Cable Crunch)", sets: 4, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/2fbujeH3F0E" },
+      { name: "ဘာဘဲလ် ဗိုက်ကွေးခြင်း (Barbell Rollout)", sets: 3, reps: "10-12", rest: 60, video: "https://www.youtube.com/embed/R8ODG1baJcM" },
+      { name: "ဟန့်ဂင် ခြေထောက် မြှောက်ခြင်း (Hanging Leg Raise)", sets: 3, reps: "10-15", rest: 60, video: "https://www.youtube.com/embed/Pr1ieGZ5atk" },
+      { name: "ကြိုးဆွဲ ဘေးတိုက် ကွေးခြင်း (Wood Chop)", sets: 3, reps: "12-15", rest: 45, video: "https://www.youtube.com/embed/pAplQXk3dkU" }
+    ],
+    home: [
+      { name: "ဗိုက်ကွေးခြင်း (Crunch)", sets: 4, reps: "20-25", rest: 30, video: "https://www.youtube.com/embed/Xyd_fa5zoEU" },
+      { name: "ပလန့် (Plank)", sets: 3, reps: "60 စက္ကန့်", rest: 45, video: "https://www.youtube.com/embed/ASdvN_XEl_c" },
+      { name: "ခြေထောက် မြှောက်ခြင်း (Leg Raise)", sets: 3, reps: "15-20", rest: 45, video: "https://www.youtube.com/embed/JB2oyawG9KI" },
+      { name: "ဘိုင်စီကယ် ခြေထောက် (Bicycle Crunch)", sets: 3, reps: "20-25", rest: 30, video: "https://www.youtube.com/embed/Iwyvozckjak" },
+      { name: "မော့တင် ခြေထောက် (Mountain Climber)", sets: 3, reps: "30-40 စက္ကန့်", rest: 30, video: "https://www.youtube.com/embed/nmwgirgXLYM" },
+      { name: "ရုရှ လှည့်ခြင်း (Russian Twist)", sets: 3, reps: "20-30 ကြိမ်", rest: 30, video: "https://www.youtube.com/embed/wkD8rjkodUI" }
+    ]
+  }
+};
+
+document.getElementById('onboardForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var data = {
+    name: document.getElementById('name').value,
+    age: Number(document.getElementById('age').value),
+    gender: document.getElementById('gender').value,
+    height: Number(document.getElementById('height').value),
+    weight: Number(document.getElementById('weight').value),
+    goal: document.getElementById('goal').value,
+    sleep: Number(document.getElementById('sleep').value),
+    experience: document.getElementById('experience').value,
+    location: document.getElementById('location').value,
+    days: Number(document.getElementById('days').value),
+    duration: Number(document.getElementById('duration').value)
+  };
+  localStorage.setItem('fitaiPlan_' + window.currentUserUID, JSON.stringify(data));
+  document.getElementById('formPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.remove('hidden');
+  buildPlan(data);
+});
+
+function buildPlan(user) {
+  var bmr = user.gender === 'male'
+    ? 10 * user.weight + 6.25 * user.height - 5 * user.age + 5
+    : 10 * user.weight + 6.25 * user.height - 5 * user.age - 161;
+  var tdee = Math.round(bmr * 1.55);
+  var target;
+  if (user.goal === 'lose') target = tdee - 500;
+  else if (user.goal === 'gain') target = tdee + 300;
+  else if (user.goal === 'sixpack') target = tdee - 400;
+  else target = tdee;
+  var protein = Math.round(user.weight * (user.goal === 'gain' ? 2.0 : user.goal === 'sixpack' ? 2.2 : 1.8));
+  var carbs = Math.round(target * (user.goal === 'sixpack' ? 0.35 : 0.45) / 4);
+  var fat = Math.round(target * 0.25 / 9);
+
+  document.getElementById('greeting').textContent = "မင်္ဂလာပါ " + user.name + "! 💪";
+  document.getElementById('calTarget').textContent = target;
+  document.getElementById('proteinTarget').textContent = protein;
+  document.getElementById('carbsTarget').textContent = carbs;
+  document.getElementById('fatTarget').textContent = fat;
+  document.getElementById('sleepTarget').textContent = user.sleep >= 7 ? user.sleep : 8;
+
+  if (window.currentStatus === 'trial') {
+    var d = Math.ceil((window.currentUserData.trialEndsAt - Date.now()) / 86400000);
+    document.getElementById('statusBox').innerHTML =
+      '<div class="card card-warn"><h3>⏰ Free Trial</h3><p>ရက် <b>' + d + '</b> ကျန်တယ်။ ကုန်ရင် Premium ဝယ်ပါ။</p></div>';
+  } else if (window.currentStatus === 'premium') {
+    var dp = Math.ceil((window.currentUserData.premiumUntil - Date.now()) / 86400000);
+    document.getElementById('statusBox').innerHTML =
+      '<div class="card card-success"><h3>⭐ Premium Active</h3><p>ရက် <b>' + dp + '</b> ကျန်တယ်။</p></div>';
+  }
+
+  var split = getSplit(user.days, user.goal);
+  var dayNames = ["တနင်္လာ", "အင်္ဂါ", "ဗုဒ္ဓဟူး", "ကြာသပတေး", "သောကြာ", "စနေ", "တနင်္ဂနွေ"];
+  var planHTML = "";
+
+  for (var i = 0; i < split.length; i++) {
+    var day = split[i];
+    planHTML += '<div class="card"><h3>' + dayNames[i] + ': ' + day + '</h3>';
+    if (day === 'အနားယူ') {
+      planHTML += '<p>😴 အနားယူပါ။ မိနစ် ၁၀ လမ်းလျှောက်ပါ။ ရေများများ သောက်ပါ။</p></div>';
+      continue;
+    }
+    var groups = day.split('+');
+    for (var g = 0; g < groups.length; g++) {
+      var gname = groups[g].trim();
+      var key = 'chest';
+      if (gname.indexOf('ရင်') >= 0) key = 'chest';
+      else if (gname.indexOf('ကျော') >= 0) key = 'back';
+      else if (gname.indexOf('ခြေ') >= 0) key = 'legs';
+      else if (gname.indexOf('ပခုံး') >= 0) key = 'shoulders';
+      else if (gname.indexOf('လက်') >= 0) key = 'arms';
+      else if (gname.indexOf('six') >= 0 || gname.indexOf('Six') >= 0) key = 'sixpack';
+      else if (gname.indexOf('ဗိုက်') >= 0) key = 'core';
+
+      var loc = user.location === 'both' ? 'gym' : user.location;
+      var list = EXERCISES[key][loc] || EXERCISES[key].home;
+      for (var x = 0; x < list.length; x++) {
+        var ex = list[x];
+        planHTML +=
+          '<div class="exercise"><b>' + ex.name + '</b><br>' +
+          ex.sets + ' ကြိမ် × ' + ex.reps + ' · အနားယူ ' + ex.rest + ' စက္ကန့်' +
+          '<br><a href="' + ex.video + '" target="_blank">▶ ဗီဒီယို ကြည့်မယ်</a></div>';
+      }
+    }
+    planHTML += '</div>';
+  }
+  document.getElementById('plan').innerHTML = planHTML;
+}
+
+function getSplit(days, goal) {
+  var sixpackExtra = goal === 'sixpack';
+  if (days <= 3) {
+    return ["တစ်ကိုယ်လုံး", "အနားယူ", "တစ်ကိုယ်လုံး", "အနားယူ",
+            "တစ်ကိုယ်လုံး+" + (sixpackExtra ? "Six Pack" : "ဗိုက်"), "အနားယူ", "အနားယူ"];
+  }
+  if (days === 4) {
+    return ["ရင်ဘတ်+လက်မောင်း", "ကျောကုန်း+လက်မောင်း", "အနားယူ",
+            "ခြေထောက်", "ပခုံး+" + (sixpackExtra ? "Six Pack" : "ဗိုက်"), "အနားယူ", "အနားယူ"];
+  }
+  if (days === 5) {
+    return ["ရင်ဘတ်", "ကျောကုန်း", "အနားယူ",
+            "ခြေထောက်", "ပခုံး",
+            sixpackExtra ? "Six Pack" : "လက်မောင်း+ဗိုက်", "အနားယူ"];
+  }
+  return ["ရင်ဘတ်", "ကျောကုန်း", "အနားယူ", "ခြေထောက်",
+          "ပခုံး", "လက်မောင်း", sixpackExtra ? "Six Pack" : "အနားယူ"];
+}
+
+function showProgress() {
+  document.getElementById('dashboardPage').classList.add('hidden');
+  document.getElementById('progressPage').classList.remove('hidden');
+  renderHistory();
+}
+function showDashboard() {
+  document.getElementById('progressPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.remove('hidden');
+}
+
+function saveWeight() {
+  var w = Number(document.getElementById('logWeight').value);
+  if (!w) { toast("အလေးချိန် ထည့်ပါ", 'danger'); return; }
+  var key = 'weightLog_' + window.currentUserUID;
+  var log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.push({ date: new Date().toISOString().split('T')[0], weight: w });
+  localStorage.setItem(key, JSON.stringify(log));
+  document.getElementById('logWeight').value = '';
+  renderHistory();
+  toast("မှတ်ပြီးပါပြီ ✅");
+}
+
+function renderHistory() {
+  var key = 'weightLog_' + window.currentUserUID;
+  var log = JSON.parse(localStorage.getItem(key) || '[]');
+  if (log.length === 0) {
+    document.getElementById('history').innerHTML =
+      '<div class="card"><p>မှတ်တမ်း မရှိသေးဘူး။</p></div>';
+    return;
+  }
+  var html = '<div class="card"><h2>မှတ်တမ်း (' + log.length + ' ခု)</h2>';
+  for (var i = log.length - 1; i >= 0; i--) {
+    html += '<p style="padding:6px 0;border-bottom:1px solid var(--border);">' +
+      log[i].date + ' → <b style="color:var(--accent);">' + log[i].weight + ' ကီလို</b></p>';
+  }
+  html += '</div>';
+  document.getElementById('history').innerHTML = html;
+}
+
+function toast(msg, type) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  if (type === 'danger') t.style.background = 'var(--danger)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 2500);
+}
+
+function copyText(txt) {
+  navigator.clipboard.writeText(txt).then(function() {
+    toast("Copy ပြီးပါပြီ ✅");
+  });
+}
+</script>
+</body>
+</html>
